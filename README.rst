@@ -16,13 +16,13 @@ should just work for most of the users
 Routing Actions
 ----------------------------
 
-Routes matching is done through the `@route` decorator,
+Routes matching is done through the ``@route`` decorator,
 each exposed method can be bound to one or multiple routes.
 
-The only requirement is that you inherit from the RoutedController instance.
+The only requirement is that you inherit from the ``RoutedController`` instance.
 
-The following example registers the `entry_by_date` method for urls like
-`/date/2012-01` and `/date/2012-01-01`::
+The following example registers the ``entry_by_date`` method for urls like
+**/date/2012-01** and **/date/2012-01-01**::
 
     from tgext.routes import RoutedController, route
 
