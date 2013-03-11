@@ -18,7 +18,7 @@ class RoutedController(TGController):
         self.map.extend(routes)
 
     def _dispatch(self, state, remainder=None):
-        if remainder is None:
+        if not remainder:
             remainder = state.path
 
         if remainder:
