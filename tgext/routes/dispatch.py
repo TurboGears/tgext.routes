@@ -21,10 +21,11 @@ class RoutedController(TGController):
         if remainder is None:
             remainder = state.path
 
-        url_to_dispatch = '/'.join(remainder)
-        match = self.map.match(url_to_dispatch)
-        if match is not None:
-            remainder = [match.pop('action', 'index')]
-            state.params.update(match)
+        if remainder:
+            url_to_dispatch = '/'.join(remainder)
+            match = self.map.match(url_to_dispatch)
+            if match is not None:
+                remainder = [match.pop('action', 'index')]
+                state.params.update(match)
 
         return super(RoutedController, self)._dispatch(state, remainder)
