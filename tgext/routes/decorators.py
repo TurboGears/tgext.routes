@@ -1,8 +1,11 @@
 from routes.route import Route
 from tg.decorators import Decoration
 
+
 class route(object):
     def __init__(self, path, **kargs):
+        if not path.startswith('/'):
+            path = '/' + path
         self.routing_path = path
         self.routing_args = kargs
 
@@ -10,5 +13,9 @@ class route(object):
         deco = Decoration.get_decoration(func)
         if not hasattr(deco, '_tgext_routes'):
             deco._tgext_routes = []
-        deco._tgext_routes.append(Route(func.__name__, self.routing_path, action=func.__name__, **self.routing_args))
+        deco._tgext_routes.append(Route(func.__name__,
+                                        self.routing_path,
+                                        controller='_tgext_routes_controller_placeholder',
+                                        action=func.__name__,
+                                        **self.routing_args))
         return func

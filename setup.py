@@ -1,13 +1,18 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.0.1'
+version = '0.1.0'
 
 here = os.path.abspath(os.path.dirname(__file__))
 try:
     README = open(os.path.join(here, 'README.rst')).read()
 except IOError:
     README = ''
+
+TEST_REQUIREMENTS = [
+  'nose',
+  'webtest',
+]
 
 setup(name='tgext.routes',
       version=version,
@@ -30,9 +35,16 @@ setup(name='tgext.routes',
       package_data = {'':['*.html', '*.js', '*.css', '*.png', '*.gif']},
       zip_safe=False,
       install_requires=[
-        "TurboGears2 >= 2.2",
+        "TurboGears2 >= 2.3.8",
         "routes"
       ],
+      extras_require={
+           # Used by Travis and Coverage due to setup.py nosetests
+           # causing a coredump when used with coverage
+           'testing': TEST_REQUIREMENTS,
+      },
+      test_suite='nose.collector',
+      tests_require=TEST_REQUIREMENTS,
       entry_points="""
       # -*- Entry points: -*-
       """)
