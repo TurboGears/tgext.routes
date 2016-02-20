@@ -60,10 +60,17 @@ class RoutedController(TGController):
         if self.mapper is None:
             return super(RoutedController, self)._dispatch(state, remainder)
 
+        if state.controller is not self:
+            # This happens when crank _dispatch_controller tries to use parent
+            # controller _dispatch method for a subcontroller that
+            # doesn't provide its own _dispatch function
+            # (IE doesn't inherit from ObjectDispatcher).
+            return super(RoutedController, self)._dispatch(state, remainder)
+
         environ = state.request.environ
 
         url = environ['PATH_INFO']
-        if state.controller is self and len(state.controller_path) > 1:
+        if len(state.controller_path) > 1:
             # In case we are a subcontroller only dispatch over the remaining URL part.
             url = '/' + '/'.join(remainder)
 
