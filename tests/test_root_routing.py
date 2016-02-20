@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from routes import Mapper
+from tg import expose
 from webtest import TestApp
 from tgext.routes import RoutedController
 from .utils import make_appcfg_for_controller
@@ -12,6 +13,13 @@ class RootController(RoutedController):
     mapper.connect('/unex', controller='home', action='unexposed')
     mapper.connect('/nocontroller', action='index')
     mapper.redirect('/home', '/')
+
+    @expose()
+    def odispatch(self):
+        return 'ObjectDispatch'
+
+    def private(self):
+        return 'PRIVATE'
 
 
 class TestRootRouting(object):
@@ -26,6 +34,10 @@ class TestRootRouting(object):
     def test_index(self):
         resp = self.app.get('/')
         assert 'INDEX' == resp.text, resp
+
+    def test_objectdispatch(self):
+        resp = self.app.get('/odispatch')
+        assert 'ObjectDispatch' == resp.text, resp
 
     def test_redirect(self):
         resp = self.app.get('/home')

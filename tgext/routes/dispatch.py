@@ -60,7 +60,7 @@ class RoutedController(TGController):
         environ = state.request.environ
 
         url = environ['PATH_INFO']
-        if len(state.controller_path) > 1:
+        if state.controller is self and len(state.controller_path) > 1:
             # In case we are a subcontroller only dispatch over the remaining URL part.
             url = '/' + '/'.join(remainder)
 
