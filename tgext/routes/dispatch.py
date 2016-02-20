@@ -19,8 +19,11 @@ class RoutedController(TGController):
     decorator on top of controller methods.
 
     In case no mapper is provided or no route is resolved
-    the dispatch proceed with standard TG object dispatch.
+    the dispatch proceed with standard TG object dispatch
+    unless the ``disable_objectdispatch`` attribute of the
+    controller is set to ``True``.
     """
+    disable_objectdispatch = False
     mapper = None
 
     def __init__(self, *args, **kw):
@@ -70,21 +73,24 @@ class RoutedController(TGController):
         else:
             route_match, route = {}, None
 
-        url = URLGenerator(self.mapper, environ)
-        environ['routes.url'] = url
+        urlgen = URLGenerator(self.mapper, environ)
+        environ['routes.url'] = urlgen
         environ['pylons.routes_dict'] = route_match
         environ['tg.routes_dict'] = route_match
-        environ['wsgiorg.routing_args'] = (url, route_match)
+        environ['wsgiorg.routing_args'] = (urlgen, route_match)
         environ['routes.route'] = route
 
         if route and route.redirect:
             # So far we only emit redirect, it should actually emit according to
             # route.redirect_status.
             route_name = '_redirect_%s' % id(route)
-            raise HTTPFound(location=url(route_name, **route_match))
+            raise HTTPFound(location=urlgen(route_name, **route_match))
 
         if not route_match:
-            return super(RoutedController, self)._dispatch(state, remainder)
+            if not self.disable_objectdispatch:
+                return super(RoutedController, self)._dispatch(state, remainder)
+            else:
+                abort(404)
 
         route_match = route_match.copy()
         tg_context = environ['tg.locals']
