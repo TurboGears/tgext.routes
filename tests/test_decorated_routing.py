@@ -1,11 +1,28 @@
 # -*- coding: utf-8 -*-
+from routes import Mapper
 from tg import expose
 from webtest import TestApp
 from tgext.routes import RoutedController, route
 from .utils import make_appcfg_for_controller
 
 
+class SubSubController(RoutedController):
+    mapper = Mapper()
+    mapper.connect('/u-{name}', controller=route.CURRENT_CONTROLLER, action='upper_name')
+
+    @expose('json')
+    @route('{name}-{surname}')
+    def inverse_name(self, name, surname):
+        return dict(name=name[::-1], surname=surname[::-1])
+
+    @expose('json')
+    def upper_name(self, name):
+        return dict(name=name.upper())
+
+
 class SubController(RoutedController):
+    subperson = SubSubController()
+
     @expose('json')
     @route('{name}-{surname}')
     def name(self, name, surname):
@@ -47,3 +64,14 @@ class TestRouteDecorator(object):
         assert 'application/json' in resp.content_type, resp
         assert resp.json['name'] == 'John', resp
         assert resp.json['surname'] == 'Doe', resp
+
+    def test_deco_on_subsubcontroller(self):
+        resp = self.app.get('/person/subperson/John-Doe')
+        assert 'application/json' in resp.content_type, resp
+        assert resp.json['name'] == 'nhoJ', resp
+        assert resp.json['surname'] == 'eoD', resp
+
+    def test_deco_mixed_with_mapper(self):
+        resp = self.app.get('/person/subperson/u-john')
+        assert 'application/json' in resp.content_type, resp
+        assert resp.json['name'] == 'JOHN', resp

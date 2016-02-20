@@ -4,6 +4,7 @@ from routes.util import URLGenerator
 from tg import TGController, abort, TGApp
 from tg.decorators import Decoration
 from tg.exceptions import HTTPFound
+from .decorators import route as route_decorator
 
 
 class RoutedController(TGController):
@@ -35,14 +36,14 @@ class RoutedController(TGController):
                     deco = Decoration.get_decoration(value)
                 else:
                     continue
-                
+
                 if hasattr(deco, '_tgext_routes'):
                     routes.extend(deco._tgext_routes)
 
         if routes:
             instance_mapper = Mapper()
             if self.mapper is not None:
-                instance_mapper.extend(self.mapper)
+                instance_mapper.extend(self.mapper.matchlist)
             instance_mapper.extend(routes)
             self.mapper = instance_mapper
 
@@ -87,7 +88,7 @@ class RoutedController(TGController):
         if not controller_name:
             abort(404)
 
-        if controller_name == '_tgext_routes_controller_placeholder':
+        if controller_name == route_decorator.CURRENT_CONTROLLER:
             controller = self
         else:
             controller_class = TGApp.lookup_controller(config, controller_name)

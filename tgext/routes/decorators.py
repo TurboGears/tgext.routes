@@ -3,6 +3,8 @@ from tg.decorators import Decoration
 
 
 class route(object):
+    CURRENT_CONTROLLER = '_tgext_routes_controller_placeholder'
+
     def __init__(self, path, **kargs):
         if not path.startswith('/'):
             path = '/' + path
@@ -15,7 +17,7 @@ class route(object):
             deco._tgext_routes = []
         deco._tgext_routes.append(Route(func.__name__,
                                         self.routing_path,
-                                        controller='_tgext_routes_controller_placeholder',
+                                        controller=route.CURRENT_CONTROLLER,
                                         action=func.__name__,
                                         **self.routing_args))
         return func
