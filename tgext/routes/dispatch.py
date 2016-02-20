@@ -29,16 +29,22 @@ class RoutedController(TGController):
         routes = []
         for name in dir(self):
             value = getattr(self.__class__, name, None)
-            if value:
-                if inspect.ismethod(value):  # pragma: no cover
-                    deco = Decoration.get_decoration(value.__func__)
-                elif inspect.isfunction(value):  # pragma: no cover
-                    deco = Decoration.get_decoration(value)
-                else:
-                    continue
+            if value is None:
+                continue
 
-                if hasattr(deco, '_tgext_routes'):
-                    routes.extend(deco._tgext_routes)
+            deco = None
+            if inspect.ismethod(value):  # pragma: no cover
+                # PY2
+                deco = Decoration.get_decoration(value.__func__)
+            elif inspect.isfunction(value):  # pragma: no cover
+                # PY3
+                deco = Decoration.get_decoration(value)
+
+            if deco is None:
+                continue
+
+            if hasattr(deco, '_tgext_routes'):
+                routes.extend(deco._tgext_routes)
 
         if routes:
             instance_mapper = Mapper()
