@@ -30,9 +30,9 @@ class RoutedController(TGController):
         for name in dir(self):
             value = getattr(self.__class__, name, None)
             if value:
-                if inspect.ismethod(value):
+                if inspect.ismethod(value):  # pragma: no cover
                     deco = Decoration.get_decoration(value.__func__)
-                elif inspect.isfunction(value):
+                elif inspect.isfunction(value):  # pragma: no cover
                     deco = Decoration.get_decoration(value)
                 else:
                     continue

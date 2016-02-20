@@ -10,6 +10,7 @@ class RootController(RoutedController):
     mapper.connect('/', controller='home', action='index')
     mapper.connect('/json', controller='home', action='jsonexposed')
     mapper.connect('/unex', controller='home', action='unexposed')
+    mapper.connect('/nocontroller', action='index')
     mapper.redirect('/home', '/')
 
 
@@ -44,4 +45,7 @@ class TestRootRouting(object):
         resp = self.app.get('/json')
         assert 'application/json' in resp.content_type, resp
         assert {"args": [], "kwargs": {}} == resp.json, resp
+
+    def test_missing_controller(self):
+        self.app.get('/nocontroller', status=404)
 
