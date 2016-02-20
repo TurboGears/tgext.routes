@@ -26,9 +26,16 @@ class RoutedController(TGController):
         super(RoutedController, self).__init__(*args, **kw)
 
         routes = []
-        for name, value in inspect.getmembers(self):
-            if inspect.ismethod(value):
-                deco = Decoration.get_decoration(value.__func__)
+        for name in dir(self):
+            value = getattr(self.__class__, name, None)
+            if value:
+                if inspect.ismethod(value):
+                    deco = Decoration.get_decoration(value.__func__)
+                elif inspect.isfunction(value):
+                    deco = Decoration.get_decoration(value)
+                else:
+                    continue
+                
                 if hasattr(deco, '_tgext_routes'):
                     routes.extend(deco._tgext_routes)
 
