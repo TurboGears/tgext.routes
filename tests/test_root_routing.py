@@ -43,5 +43,5 @@ class TestRootRouting(object):
     def test_exposition_works(self):
         resp = self.app.get('/json')
         assert 'application/json' in resp.content_type, resp
-        assert '{"args": [], "kwargs": {}}' in resp.text, resp
+        assert {"args": [], "kwargs": {}} == resp.json, resp
 
