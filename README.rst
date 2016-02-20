@@ -85,7 +85,7 @@ example a ``HomeController`` class will be looked for into the ``home.py`` modul
 serve the */*, */json* and */unex* paths through its ``index``, ``jsonexposed`` and
 ``unexposed`` methods.
 
-In case both a ``mapper`` attribute and ``@route`` decorator are uside inside the same
+In case both a ``mapper`` attribute and ``@route`` decorator are used inside the same
 ``RoutedController``, the ``@route`` decorator is applied after the mapper routes.
 
 For more documentation about routes refer to `Routes Documentation <http://routes.readthedocs.org>`_
