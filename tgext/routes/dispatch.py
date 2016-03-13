@@ -1,9 +1,12 @@
 import inspect
 from routes import Mapper
 from routes.util import URLGenerator
-from tg import TGController, abort, TGApp
+from routes import request_config
+from tg import TGController, abort, TGApp, redirect
 from tg.decorators import Decoration
 from tg.exceptions import HTTPFound
+from tg.util import Bunch
+
 from .decorators import route as route_decorator
 
 
@@ -80,6 +83,25 @@ class RoutedController(TGController):
         else:
             route_match, route = {}, None
 
+        tg_context = environ['tg.locals']
+
+        routes_config = request_config()
+        if hasattr(routes_config, 'using_request_local'):
+            routes_config.request_local = lambda: tg_context.request.routes_local
+
+        if ('HTTPS' in environ or environ.get('wsgi.url_scheme') == 'https' or
+            environ.get('HTTP_X_FORWARDED_PROTO') == 'https'):
+            protocol = 'https'
+        else:
+            protocol = 'http'
+
+        tg_context.request.routes_local = Bunch(
+            mapper=self.mapper,
+            host=environ['HTTP_HOST'],
+            protocol=protocol,
+            redirect=redirect
+        )
+
         urlgen = URLGenerator(self.mapper, environ)
         environ['routes.url'] = urlgen
         environ['pylons.routes_dict'] = route_match
@@ -100,8 +122,8 @@ class RoutedController(TGController):
                 abort(404)
 
         route_match = route_match.copy()
-        tg_context = environ['tg.locals']
         config = tg_context.config
+
 
         controller_name = route_match.pop('controller', None)
         if not controller_name:
