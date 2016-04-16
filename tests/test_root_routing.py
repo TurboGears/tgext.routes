@@ -12,6 +12,7 @@ class RootController(RoutedController):
     mapper.connect('/json', controller='home', action='jsonexposed')
     mapper.connect('/unex', controller='home', action='unexposed')
     mapper.connect('/nocontroller', action='index')
+    mapper.connect('/delete', controller='home', action='delete', conditions=dict(method=["DELETE"]))
     mapper.redirect('/home', '/')
 
     @expose()
@@ -22,15 +23,19 @@ class RootController(RoutedController):
         return 'PRIVATE'
 
 
-class TestRootRouting(object):
+class BaseRoutesTest(object):
+    root_controller = RootController
+
     @classmethod
     def setup_class(cls):
-        config = make_appcfg_for_controller(RootController())
+        config = make_appcfg_for_controller(cls.root_controller())
         cls.wsgi_app = config.make_wsgi_app()
 
     def setup(self):
         self.app = TestApp(self.wsgi_app)
 
+
+class TestRootRouting(BaseRoutesTest):
     def test_index(self):
         resp = self.app.get('/')
         assert 'INDEX' == resp.text, resp
@@ -61,3 +66,17 @@ class TestRootRouting(object):
     def test_missing_controller(self):
         self.app.get('/nocontroller', status=404)
 
+    def test_delete_without_method(self):
+        self.app.get('/delete', status=404)
+
+    def test_delete_with_method_override_disabled(self):
+        self.app.get('/delete?_method=DELETE', status=404)
+
+
+class TestRootRoutingMethodOverride(BaseRoutesTest):
+    class root_controller(RootController):
+        method_override = True
+
+    def test_delete_with_method_override_enabled(self):
+        resp = self.app.get('/delete?_method=DELETE')
+        assert 'DELETE' in resp.text, resp

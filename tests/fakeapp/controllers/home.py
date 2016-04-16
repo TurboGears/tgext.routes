@@ -16,3 +16,6 @@ class HomeController(TGController):
     @expose()
     def index(self, *args, **kwargs):
         return 'INDEX'
+
+    def delete(self, *args, **kwargs):
+        return 'DELETE'

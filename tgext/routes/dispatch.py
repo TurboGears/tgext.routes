@@ -25,9 +25,16 @@ class RoutedController(TGController):
     the dispatch proceed with standard TG object dispatch
     unless the ``disable_objectdispatch`` attribute of the
     controller is set to ``True``.
+
+    RoutedController also provides a ``method_override``
+    class attribute to turn on/off the possibility to override
+    `REQUEST_METHOD` through `?_method=` url parameter
+    to conveniently perform other type of requests in some
+    conditions.
     """
     disable_objectdispatch = False
     mapper = None
+    method_override = False
 
     def __init__(self, *args, **kw):
         super(RoutedController, self).__init__(*args, **kw)
@@ -77,11 +84,12 @@ class RoutedController(TGController):
             # In case we are a subcontroller only dispatch over the remaining URL part.
             url = '/' + '/'.join(remainder)
 
-        # routes middleware overrides methods using _method param.
-        if environ['REQUEST_METHOD'] == 'GET' and '_method' in state.request.GET:
-            environ['REQUEST_METHOD'] = state.request.GET['_method'].upper()
-        elif environ['REQUEST_METHOD'] == 'POST' and '_method' in state.request.POST:
-            environ['REQUEST_METHOD'] = state.request.POST['_method'].upper()
+        if self.method_override is True:
+            # routes middleware overrides methods using _method param.
+            if environ['REQUEST_METHOD'] == 'GET' and '_method' in state.request.GET:
+                environ['REQUEST_METHOD'] = state.request.GET['_method'].upper()
+            elif environ['REQUEST_METHOD'] == 'POST' and '_method' in state.request.POST:
+                environ['REQUEST_METHOD'] = state.request.POST['_method'].upper()
 
         results = self.mapper.routematch(url, environ)
         if results:
@@ -129,7 +137,6 @@ class RoutedController(TGController):
 
         route_match = route_match.copy()
         config = tg_context.config
-
 
         controller_name = route_match.pop('controller', None)
         if not controller_name:
