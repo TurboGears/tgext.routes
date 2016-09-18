@@ -14,6 +14,8 @@ class RootController(RoutedController):
     mapper.connect('/nocontroller', action='index')
     mapper.connect('/delete', controller='home', action='delete', conditions=dict(method=["DELETE"]))
     mapper.redirect('/home', '/')
+    mapper.connect('/forsub{_dispatch:.*?}', controller='home',  action='_dispatch')
+    mapper.connect('/altsub', controller='home', action='_dispatch')
 
     @expose()
     def odispatch(self):
@@ -80,3 +82,31 @@ class TestRootRoutingMethodOverride(BaseRoutesTest):
     def test_delete_with_method_override_enabled(self):
         resp = self.app.get('/delete?_method=DELETE')
         assert 'DELETE' in resp.text, resp
+
+
+class TestRootRoutingDispatchContinuation(BaseRoutesTest):
+    def test_subdispatch(self):
+        self.app.get('/forsub/missing', status=404)
+
+    def test_subdispatch_index(self):
+        resp = self.app.get('/forsub/')
+        assert 'INDEX' in resp.text
+
+    def test_subdispatch_subcontroller(self):
+        resp = self.app.get('/forsub/sub')
+        assert 'SUBINDEX' in resp.text
+
+    def test_subdispatch_subcontroller_action(self):
+        resp = self.app.get('/forsub/sub/hello')
+        assert 'Hello World' in resp.text
+
+    def test_subdispatch_subcontroller_action_args(self):
+        resp = self.app.get('/forsub/sub/hello/User')
+        assert 'Hello User' in resp.text
+
+    def test_altsub(self):
+        resp = self.app.get('/altsub')
+        assert 'INDEX' in resp
+
+    def test_altsub_more(self):
+        self.app.get('/altsub/anything', status=404)

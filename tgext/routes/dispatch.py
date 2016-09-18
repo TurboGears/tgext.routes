@@ -150,7 +150,14 @@ class RoutedController(TGController):
             state.add_controller(controller_name, controller)
 
         action_name = route_match.pop('action', 'index')
-        action = getattr(controller, action_name)
+        if action_name == '_dispatch':
+            remainder = route_match.pop('_dispatch', '').split('/')
+            return controller._dispatch(state, remainder)
+
+        try:
+            action = getattr(controller, action_name)
+        except AttributeError:
+            abort(404)
 
         state.set_action(action, [])
         state.set_params(route_match)

@@ -2,7 +2,19 @@
 from tg import TGController, expose
 
 
+class SubController(TGController):
+    @expose()
+    def hello(self, name='World'):
+        return 'Hello %s' % name
+
+    @expose()
+    def index(self):
+        return 'SUBINDEX'
+
+
 class HomeController(TGController):
+    sub = SubController()
+    
     @expose('json')
     def jsonexposed(self, *args, **kwargs):
         return dict(kwargs=kwargs, args=args)

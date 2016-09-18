@@ -89,3 +89,20 @@ In case both a ``mapper`` attribute and ``@route`` decorator are used inside the
 ``RoutedController``, the ``@route`` decorator is applied after the mapper routes.
 
 For more documentation about routes refer to `Routes Documentation <http://routes.readthedocs.org>`_
+
+Continuing with ObjectDispatch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When using tgext.routes as the primary routing method it is possible to tell
+it to continue with ObjectDispatch (or any specific dispatch method provided
+by the target controller) using `_dispatch` as the `action` of the route.
+
+By default as routes are matched exactly providing a `_dispatch` action will
+provide no remainder, so it will only dispatch to `index` method of the target controller.
+To continue dispatching with a remaining part of the url you can use an
+`_dispatch` label::
+
+    mapper.connect('/forsub{_dispatch:.*?}', controller='home',  action='_dispatch')
+
+This will dispatch to `HomeController` continuing with ObjectDispatch for anything
+that cames after `/forsub` part of the url.
