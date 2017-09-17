@@ -11,7 +11,7 @@ except IOError:
 
 TEST_REQUIREMENTS = [
   'nose',
-  'webtest',
+  'webtest<=2.0.24',
 ]
 
 setup(name='tgext.routes',
