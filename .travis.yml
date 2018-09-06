@@ -9,9 +9,10 @@ python:
 install:
   - "pip install coverage"
   - "pip install nose"
+  - "pip install --upgrade pip"
   - "travis_retry pip install git+git://github.com/TurboGears/crank.git"
   - "travis_retry pip install git+git://github.com/TurboGears/tg2.git@development"
-  - "pip install --no-use-wheel -e .[testing]"
+  - "pip install -e .[testing]"
 
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install coveralls && export HAS_COVERALLS=1; fi
 
