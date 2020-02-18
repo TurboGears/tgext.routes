@@ -11,7 +11,7 @@ except IOError:
 
 TEST_REQUIREMENTS = [
   'pytest',
-  'webtest<=2.0.24',
+  'webtest',
 ]
 
 setup(name='tgext.routes',
