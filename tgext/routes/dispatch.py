@@ -109,9 +109,10 @@ class RoutedController(TGController):
         else:
             protocol = 'http'
 
+        fallback_host = "%s:%s" % (environ["SERVER_NAME"], environ["SERVER_PORT"])
         tg_context.request.routes_local = Bunch(
             mapper=self.mapper,
-            host=environ['HTTP_HOST'],
+            host=environ.get('HTTP_HOST') or fallback_host,
             protocol=protocol,
             redirect=redirect
         )

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from routes import Mapper
-from tg import expose
+from tg import expose, request
 from webtest import TestApp
 from tgext.routes import RoutedController
 from .utils import make_appcfg_for_controller
@@ -23,6 +23,10 @@ class RootController(RoutedController):
 
     def private(self):
         return 'PRIVATE'
+
+    @expose()
+    def get_host(self):
+        return request.routes_local.host
 
 
 class BaseRoutesTest(object):
@@ -73,6 +77,10 @@ class TestRootRouting(BaseRoutesTest):
 
     def test_delete_with_method_override_disabled(self):
         self.app.get('/delete?_method=DELETE', status=404)
+
+    def test_without_http_host(self):
+        resp = self.app.get("/get_host", extra_environ={"HTTP_HOST": ""})
+        assert "localhost:80" == resp.text
 
 
 class TestRootRoutingMethodOverride(BaseRoutesTest):
