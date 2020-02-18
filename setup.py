@@ -10,7 +10,7 @@ except IOError:
     README = ''
 
 TEST_REQUIREMENTS = [
-  'nose',
+  'pytest',
   'webtest<=2.0.24',
 ]
 
@@ -26,7 +26,7 @@ setup(name='tgext.routes',
         ],
       keywords='turbogears2.extension',
       author='Alessandro Molina',
-      author_email='alessandro.molina@axant.it',
+      author_email='amol@turbogears.org',
       url='https://github.com/TurboGears/tgext.routes',
       license='MIT',
       packages=find_packages(exclude=['ez_setup']),
@@ -39,11 +39,8 @@ setup(name='tgext.routes',
         "routes"
       ],
       extras_require={
-           # Used by Travis and Coverage due to setup.py nosetests
-           # causing a coredump when used with coverage
            'testing': TEST_REQUIREMENTS,
       },
-      test_suite='nose.collector',
       tests_require=TEST_REQUIREMENTS,
       entry_points="""
       # -*- Entry points: -*-
