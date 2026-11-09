@@ -6,6 +6,7 @@ from tg import TGController, abort, TGApp, redirect
 from tg.decorators import Decoration
 from tg.exceptions import HTTPFound
 from tg.util import Bunch
+from tg.util.instance_method import default_im_func
 
 from .decorators import route as route_decorator
 
@@ -160,6 +161,7 @@ class RoutedController(TGController):
         except AttributeError:
             abort(404)
 
+        Decoration.get_decoration(default_im_func(action))
         state.set_action(action, [])
         state.set_params(route_match)
         return state

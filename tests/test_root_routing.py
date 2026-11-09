@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import pytest
 from routes import Mapper
 from tg import expose, request
+from tg.controllers.decoratedcontroller import DecoratedController
 from webtest import TestApp
-from tgext.routes import RoutedController
+from tgext.routes import RoutedController, route
 from .utils import make_appcfg_for_controller
 
 
@@ -81,6 +83,23 @@ class TestRootRouting(BaseRoutesTest):
     def test_without_http_host(self):
         resp = self.app.get("/get_host", extra_environ={"HTTP_HOST": ""})
         assert "localhost:80" == resp.text
+
+
+def test_routed_action_respects_allowed_methods():
+    if not hasattr(DecoratedController, '_enforce_allowed_methods'):
+        pytest.skip('TurboGears does not support allowed_methods')
+
+    class Controller(RoutedController):
+        mapper = Mapper()
+        mapper.connect('/restricted', controller=route.CURRENT_CONTROLLER, action='restricted')
+
+        @expose(allowed_methods=['POST'])
+        def restricted(self):
+            return 'POSTED'
+
+    app = TestApp(make_appcfg_for_controller(Controller()).make_wsgi_app())
+    assert app.post('/restricted').text == 'POSTED'
+    app.get('/restricted', status=405)
 
 
 class TestRootRoutingMethodOverride(BaseRoutesTest):
