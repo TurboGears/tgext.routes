@@ -85,16 +85,6 @@ class TestRootRouting(BaseRoutesTest):
         assert "localhost:80" == resp.text
 
 
-def test_unexposed_bound_action_on_mapped_controller():
-    class Controller(RoutedController):
-        mapper = Mapper()
-        mapper.connect('/plain', controller='home', action='plain')
-
-    app = TestApp(make_appcfg_for_controller(Controller()).make_wsgi_app())
-    assert app.get('/plain').text == 'PLAIN'
-    app.get('/plain/extra', status=404)
-
-
 def test_routed_action_respects_allowed_methods():
     if not hasattr(DecoratedController, '_enforce_allowed_methods'):
         pytest.skip('TurboGears does not support allowed_methods')

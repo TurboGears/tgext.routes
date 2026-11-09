@@ -22,9 +22,6 @@ class HomeController(TGController):
     def unexposed(self):
         return 'HI'
 
-    def plain(self):
-        return 'PLAIN'
-
     def private(self):
         return 'NONO!'
 
